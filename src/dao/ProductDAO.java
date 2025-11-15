@@ -1,11 +1,14 @@
 package pos.dao;
 
 import pos.config.DB;
-import pos.model.Product;
+import pos.model.Models.Product;
+
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductDAO {
+
     public static void insert(Product p) {
         try (Connection conn = DB.connect();
              PreparedStatement ps = conn.prepareStatement("INSERT INTO products (name,price,stock) VALUES (?,?,?)")) {
@@ -71,4 +74,3 @@ public class ProductDAO {
         } catch (SQLException e) { e.printStackTrace(); }
     }
 }
-    
