@@ -90,7 +90,6 @@ public class Main {
         System.out.println("Logged out.");
     }
 
-    // ==================== Admin ====================
     private static void adminMenu() {
         System.out.println("\n--- Admin Menu ---");
         System.out.println("1) Manage Products\n2) View Inventory\n3) Manage Sales\n4) Manage Users\n5) Approve Registrations\n6) Logout");
@@ -119,7 +118,6 @@ public class Main {
         }
     }
 
-    // ==================== Products ====================
     private static void productManagement() {
         System.out.println("\n1) Add Product\n2) Update Product\n3) Delete Product\n4) List\n5) Back");
         System.out.print("Choose: ");
@@ -198,7 +196,6 @@ public class Main {
             System.out.printf("%3d %-15s %8.2f %5d\n", p.id, p.name, p.price, p.stock);
     }
 
-    // ==================== Sales ====================
     private static void createSale() {
         List<SaleItem> items = new ArrayList<>();
         while (true) {
@@ -327,7 +324,6 @@ private static void salesManagement() {
 }
 
 
-    // ==================== Users ====================
     private static void manageUsers() {
         System.out.println("\n1) Add User (direct)\n2) List Users\n3) Back");
         System.out.print("Choose: ");
@@ -367,7 +363,6 @@ private static void salesManagement() {
         catch (NumberFormatException ex) { System.out.println("Invalid."); }
     }
 
-    // ==================== Receipt ====================
     private static void printReceipt(Sale sale) {
         System.out.println("\n======= RECEIPT =======");
         System.out.println("Cashier: " + currentUser.username);

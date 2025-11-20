@@ -1,53 +1,42 @@
-    package pos.config;
+package pos.config;
 
-    import java.sql.*;
-    import pos.util.PasswordUtil;
+import java.sql.*;
+import pos.util.PasswordUtil;
 
-    public class DB {
-        private static final String DB_URL = "jdbc:sqlite:pos.db";
+public class DB {
+    private static final String DB_URL = "jdbc:sqlite:pos.db";
 
-        public static Connection connect() throws SQLException {
-            return DriverManager.getConnection(DB_URL);
-        }
+    public static Connection connect() throws SQLException {
+        return DriverManager.getConnection(DB_URL);
+    }
 
-        public static void init() {
-            try (Connection conn = connect(); Statement st = conn.createStatement()) {
-                st.execute("CREATE TABLE IF NOT EXISTS users (" +
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "username TEXT UNIQUE, " +
-                        "password TEXT, " +
-                        "role TEXT)");
-                st.execute("CREATE TABLE IF NOT EXISTS products (" +
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "name TEXT UNIQUE, " +
-                        "price REAL, " +
-                        "stock INTEGER)");
-                st.execute("CREATE TABLE IF NOT EXISTS sales (" +
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "user_id INTEGER, " +
-                        "datetime TEXT, " +
-                        "total REAL, " +
-                        "discount REAL DEFAULT 0, " +
-                        "payment_mode TEXT, " +
-                        "paid INTEGER DEFAULT 0, " +
-                        "status TEXT)");
-                st.execute("CREATE TABLE IF NOT EXISTS sale_items (" +
-                        "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "sale_id INTEGER, " +
-                        "product_id INTEGER, " +
-                        "qty INTEGER, " +
-                        "price REAL)");
-                try (ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM users WHERE role='ADMIN'")) {
-                    if (rs.next() && rs.getInt(1) == 0) {
-                        String hash = PasswordUtil.hash("admin123");
-                        st.execute("INSERT INTO users (username,password,role) VALUES ('admin','" + hash + "','ADMIN')");
-                        System.out.println("Default admin created: admin / admin123");
-                    }
-                }
-                System.out.println("Database initialized (pos.db)");
-            } catch (SQLException e) {
-                System.out.println("Failed to connect to the database.");
-                e.printStackTrace();
+    public static void init() {
+        try (Connection conn = connect()) {
+
+            if (!tableExists(conn, "users") ||
+                !tableExists(conn, "products") ||
+                !tableExists(conn, "sales") ||
+                !tableExists(conn, "sale_items")) {
+
+                System.out.println("ERROR: One or more database tables are missing!");
+                System.out.println("Your existing data will NOT be modified.");
+                System.out.println("Please restore your database or import the correct SQL structure.");
+                return;
             }
+
+            System.out.println("Database connected successfully.");
+
+        } catch (SQLException e) {
+            System.out.println("Failed to connect to the database.");
+            e.printStackTrace();
         }
     }
+
+    private static boolean tableExists(Connection conn, String tableName) {
+        try (ResultSet rs = conn.getMetaData().getTables(null, null, tableName, null)) {
+            return rs.next(); 
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+}
